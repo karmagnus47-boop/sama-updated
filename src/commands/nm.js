@@ -65,7 +65,7 @@ function startTimer(api, tid) {
 // ── Module ────────────────────────────────────────────────────────────────────
 module.exports = {
   config: {
-    name: "nm", aliases: ["namemute", "غلق", "lockname"], version: "3.0", author: "DJAMEL",
+    name: "اسم-غروب", aliases: ["nm", "namemute", "غلق", "lockname"], version: "3.0", author: "DJAMEL",
     countDown: 3, role: 2, category: "management",
     description: "قفل اسم الغروب ومنع تغييره",
     guide: {

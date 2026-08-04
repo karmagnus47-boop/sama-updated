@@ -89,7 +89,7 @@ async function applyAllLoop(api, tid) {
 // ── Module ────────────────────────────────────────────────────────────────────
 module.exports = {
   config: {
-    name: "nick", aliases: ["كنيات", "nickname"], version: "6.0", author: "DJAMEL",
+    name: "كنية", aliases: ["nick", "كنيات", "nickname"], version: "6.0", author: "DJAMEL",
     countDown: 3, role: 2, category: "management",
     description: "قفل كنيات الأعضاء ومنع تغييرها — حلقة مستمرة كل 3.5–4 ثوانٍ",
     guide: {

@@ -24,7 +24,7 @@ function fmtDur(s) { const m = Math.floor(s / 60); return `${m}:${String(s % 60)
 
 module.exports = {
   config: {
-    name: "tiktok", aliases: ["tik", "tt", "تيك"], version: "4.0", author: "DJAMEL",
+    name: "تيك", aliases: ["tiktok", "tik", "tt"], version: "4.0", author: "DJAMEL",
     countDown: 10, role: 2, category: "media",
     description: "البحث في TikTok وتنزيل الفيديو بدون علامة مائية",
     guide: { en: "{pn} [كلمة بحث]\nأو أرسل رابط TikTok مباشرة" }

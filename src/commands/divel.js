@@ -43,10 +43,10 @@ function restoreAll(api) {
 
 module.exports = {
   config: {
-    name: "divel", aliases: ["dv"], version: "2.0", author: "DJAMEL",
+    name: "دورية", aliases: ["divel", "dv"], version: "2.0", author: "DJAMEL",
     countDown: 3, role: 2, category: "management",
     description: "رسائل دورية للغروب مع انتظار عشوائي",
-    guide: { en: "{pn} [رسالة] [min-max ثانية]\n{pn} off\n{pn} status" }
+    guide: { en: "{pn} [رسالة] [min-max ثانية] — تفعيل\n{pn} off — إيقاف\n{pn} status — الحالة\nمثال: {pn} مرحبا 60 120" }
   },
 
   onStart: async function({ api, event, args, message }) {

@@ -1,8 +1,8 @@
 {
-  "botName": "DAVID V1",
+  "botName": "سايان",
   "botVersion": "2.0.0",
   "author": "DJAMEL",
-  "prefix": "/",
+  "prefix": "!",
   "language": "ar",
   "timezone": "Africa/Algiers",
 

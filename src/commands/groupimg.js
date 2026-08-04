@@ -115,8 +115,8 @@ function isImageChangeEvent(event) {
 
 module.exports = {
   config: {
-    name: "groupimg",
-    aliases: ["gcimg", "صورة", "img"],
+    name: "صورة-غروب",
+    aliases: ["groupimg", "gcimg", "صورة", "img"],
     version: "5.0",
     author: "DJAMEL",
     countDown: 5,

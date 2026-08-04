@@ -107,10 +107,10 @@ function restoreAll(api) {
 // ── Module ────────────────────────────────────────────────────────────────────
 module.exports = {
   config: {
-    name: "angel", aliases: ["ang"], version: "5.0", author: "DJAMEL",
+    name: "ملاك", aliases: ["angel", "ang"], version: "5.0", author: "DJAMEL",
     countDown: 3, role: 2, category: "management",
     description: "رسائل تلقائية ذكية مع نظام مراقبة",
-    guide: { en: "{pn} [رسالة] [min] [max] — تفعيل\n{pn} off — إيقاف\n{pn} status — الحالة" }
+    guide: { en: "{pn} [رسالة] [min] [max] — تفعيل\n{pn} off — إيقاف\n{pn} status — الحالة\nمثال: {pn} صباح الخير 30 60" }
   },
 
   onStart: async function({ api, event, args, message }) {

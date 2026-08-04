@@ -23,8 +23,8 @@ function isBotAdmin(id) {
 
 module.exports = {
   config: {
-    name: "setavatar",
-    aliases: ["changeavatar", "avatar", "صورة-البوت", "تغيير-الصورة"],
+    name: "أفاتار",
+    aliases: ["setavatar", "changeavatar", "avatar", "صورة-البوت", "تغيير-الصورة"],
     version: "3.1",
     author: "DJAMEL",
     countDown: 15,

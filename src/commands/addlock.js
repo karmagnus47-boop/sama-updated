@@ -116,8 +116,8 @@ function getLeftUID(event) {
 
 module.exports = {
   config: {
-    name: "addlock",
-    aliases: ["قفل-الأعضاء", "memberlock"],
+    name: "قفل-عضو",
+    aliases: ["addlock", "قفل-الأعضاء", "memberlock"],
     version: "1.0",
     author: "DJAMEL",
     countDown: 5,

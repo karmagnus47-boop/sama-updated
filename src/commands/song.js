@@ -55,7 +55,7 @@ async function downloadViaApi(videoUrl, outPath) {
 
 module.exports = {
   config: {
-    name: "song", aliases: ["music", "أغنية", "موسيقى"], version: "4.0", author: "DJAMEL",
+    name: "أغنية", aliases: ["song", "music", "موسيقى"], version: "4.0", author: "DJAMEL",
     countDown: 10, role: 2, category: "media",
     description: "البحث عن الأغاني وتنزيلها من YouTube",
     guide: { en: "{pn} [اسم الأغنية]\nمثال: {pn} يا حبيبي" }

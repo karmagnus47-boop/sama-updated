@@ -21,7 +21,7 @@ function formatUptime(ms) {
 
 module.exports = {
   config: {
-    name: "uptime", aliases: ["up","ping","وقت"], version: "2.0", author: "DJAMEL",
+    name: "حالة", aliases: ["uptime", "up", "ping", "وقت"], version: "2.0", author: "DJAMEL",
     countDown: 5, role: 2, category: "info",
     description: "عرض وقت تشغيل البوت مع الإحصائيات",
     guide: { en: "{pn} — عرض الإحصائيات" }
@@ -41,7 +41,7 @@ module.exports = {
     const pong = Date.now() - ping;
 
     const lines = [
-      `╔════ DAVID V1 — Status ════╗`,
+      `╔════ سايان — الحالة ════╗`,
       `║ 🤖 Bot ID: ${uid}`,
       `║ ⏱ Uptime: ${formatUptime(upMs)}`,
       `║ 🏓 Ping: ${pong}ms`,

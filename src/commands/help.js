@@ -1,159 +1,189 @@
 /**
- * DAVID V1 — /help — قائمة الأوامر بتصميم فخم
- * Copyright © 2025 DJAMEL
+ * سايان — أمر الدليل الشامل
+ * الاستخدام: ! سايان دليل  أو  ! دليل
  */
 "use strict";
 
-// ── تصنيفات الأوامر ───────────────────────────────────────────────────────────
-const CATEGORIES = [
+const LINE = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
+
+// ── تفاصيل كل أمر ────────────────────────────────────────────────────────────
+const COMMANDS = [
+  // الإدارة
   {
-    icon: "🛡️",
-    title: "الإدارة والتحكم",
-    cmds: [
-      { name: "nm",            icon: "🔒", desc: "قفل اسم الغروب ومنع تغييره" },
-      { name: "nick",          icon: "✍️", desc: "قفل كنيات الأعضاء باستمرار" },
-      { name: "groupimg",      icon: "🖼️", desc: "تغيير وقفل صورة الغروب" },
-      { name: "changeavatar",  icon: "📸", desc: "تغيير صورة حساب البوت" },
-    ],
+    icon: "🔒", name: "اسم-غروب", cat: "🛡️ الإدارة",
+    desc: "قفل اسم الغروب ومنع تغييره",
+    usage: "! اسم-غروب [الاسم] — تفعيل\n! اسم-غروب off — إيقاف\n! اسم-غروب status — الحالة\n! اسم-غروب time [min] [max] — ضبط التجديد",
+    role: "🔑 أدمن",
   },
   {
-    icon: "💬",
-    title: "الرسائل التلقائية",
-    cmds: [
-      { name: "angel", icon: "👼", desc: "رسائل تلقائية دورية للغروبات" },
-      { name: "divel", icon: "🌀", desc: "رسائل دورية بانتظار عشوائي" },
-    ],
+    icon: "✍️", name: "كنية", cat: "🛡️ الإدارة",
+    desc: "قفل كنيات الأعضاء ومنع تغييرها — حلقة مستمرة",
+    usage: "! كنية [الاسم] — تفعيل لكل الأعضاء\n! كنية off — إيقاف\n! كنية status — الحالة\n! كنية حدف — حذف الكنيات",
+    role: "🔑 أدمن",
   },
   {
-    icon: "🎭",
-    title: "الترفيه والوسائط",
-    cmds: [
-      { name: "song",   icon: "🎵", desc: "تنزيل أغاني من YouTube" },
-      { name: "tiktok", icon: "🎬", desc: "تنزيل فيديو TikTok بدون علامة مائية" },
-    ],
+    icon: "🖼️", name: "صورة-غروب", cat: "🛡️ الإدارة",
+    desc: "تغيير وقفل صورة الغروب تلقائياً",
+    usage: "! صورة-غروب [رابط] — أو رد على صورة\n! صورة-غروب off — إيقاف\n! صورة-غروب status — الحالة",
+    role: "🔑 أدمن",
   },
   {
-    icon: "⚙️",
-    title: "النظام والمعلومات",
-    cmds: [
-      { name: "uptime", icon: "⏱️", desc: "وقت التشغيل والإحصائيات" },
-      { name: "chats",  icon: "💬", desc: "إدارة المحادثات والغروبات" },
-      { name: "help",   icon: "❓", desc: "عرض قائمة الأوامر" },
-    ],
+    icon: "👥", name: "قفل-عضو", cat: "🛡️ الإدارة",
+    desc: "يُضيف عضواً تلقائياً عند مغادرة أي شخص لإبقاء العدد ثابتاً",
+    usage: "! قفل-عضو on — تفعيل للغروب الحالي\n! قفل-عضو off — إيقاف\n! قفل-عضو status — الحالة\n! قفل-عضو list — كل الغروبات",
+    role: "🔑 أدمن",
+  },
+  {
+    icon: "📸", name: "أفاتار", cat: "🛡️ الإدارة",
+    desc: "تغيير صورة بروفايل حساب البوت",
+    usage: "! أفاتار [رابط الصورة]\nأو رد على صورة بـ  ! أفاتار",
+    role: "👑 مالك",
+  },
+  // الرسائل التلقائية
+  {
+    icon: "👼", name: "ملاك", cat: "💬 الرسائل التلقائية",
+    desc: "رسائل تلقائية ذكية — يتوقف إذا لم يرد أحد ويستأنف عند أول رد",
+    usage: "! ملاك [رسالة] [min] [max] — تفعيل (المدة بالثواني)\n! ملاك off — إيقاف\n! ملاك status — الحالة\nمثال: ! ملاك صباح الخير 30 60",
+    role: "🔑 أدمن",
+  },
+  {
+    icon: "🌀", name: "دورية", cat: "💬 الرسائل التلقائية",
+    desc: "رسائل دورية للغروب بانتظار عشوائي بين كل رسالة",
+    usage: "! دورية [رسالة] [min-max ثانية] — تفعيل\n! دورية off — إيقاف\n! دورية status — الحالة\nمثال: ! دورية تفضلوا بالطلب 60 120",
+    role: "🔑 أدمن",
+  },
+  // الترفيه
+  {
+    icon: "🎵", name: "أغنية", cat: "🎭 الترفيه والوسائط",
+    desc: "البحث عن الأغاني وتنزيلها من YouTube",
+    usage: "! أغنية [اسم الأغنية أو كلمات]\nمثال: ! أغنية يا حبيبي",
+    role: "👤 مستخدم",
+  },
+  {
+    icon: "🎬", name: "تيك", cat: "🎭 الترفيه والوسائط",
+    desc: "تنزيل فيديو TikTok بدون علامة مائية أو البحث فيه",
+    usage: "! تيك [رابط TikTok]\nأو: ! تيك [كلمة بحث]",
+    role: "👤 مستخدم",
+  },
+  // النظام
+  {
+    icon: "⏱️", name: "حالة", cat: "⚙️ النظام",
+    desc: "عرض وقت تشغيل البوت مع إحصائيات الذاكرة والأداء",
+    usage: "! حالة",
+    role: "👤 مستخدم",
+  },
+  {
+    icon: "💬", name: "محادثات", cat: "⚙️ النظام",
+    desc: "إدارة الغروبات والمحادثات الخاصة",
+    usage: "! محادثات count — إحصائيات\n! محادثات list — قائمة الغروبات\n! محادثات dm on/off — قفل/فك الخاص\n! محادثات ملاك — حالة الملاك",
+    role: "🔑 أدمن",
+  },
+  {
+    icon: "📖", name: "سايان", cat: "⚙️ النظام",
+    desc: "دليل الأوامر الشامل مع شرح الاستخدام",
+    usage: "! سايان دليل — كل الأوامر\n! دليل [اسم الأمر] — تفاصيل أمر",
+    role: "👤 مستخدم",
   },
 ];
 
-// ── بيانات تفصيلية لكل أمر ────────────────────────────────────────────────────
-const CMD_DETAILS = {
-  nm:           { usage: "/nm [اسم] / off / time [min] [max] / status", role: "🔑 Admin",  cat: "الإدارة" },
-  nick:         { usage: "/nick [اسم] / off / status / حدف",            role: "🔑 Admin",  cat: "الإدارة" },
-  groupimg:     { usage: "/groupimg [رابط أو صورة] / off / status",     role: "🔑 Admin",  cat: "الإدارة" },
-  setavatar:    { usage: "/changeavatar [رابط] — أو رد على صورة",       role: "👑 Owner",  cat: "الإدارة" },
-  changeavatar: { usage: "/changeavatar [رابط] — أو رد على صورة",       role: "👑 Owner",  cat: "الإدارة" },
-  angel:        { usage: "/angel [رسالة] [min-max ثانية] / off / status",role: "🔑 Admin",  cat: "الرسائل" },
-  divel:        { usage: "/divel [رسالة] [min-max] / off / status",      role: "🔑 Admin",  cat: "الرسائل" },
-  song:         { usage: "/song [اسم الأغنية أو كلمات]",                role: "👤 User",   cat: "الترفيه" },
-  tiktok:       { usage: "/tiktok [بحث أو رابط]",                       role: "👤 User",   cat: "الترفيه" },
-  tik:          { usage: "/tiktok [بحث أو رابط]",                       role: "👤 User",   cat: "الترفيه" },
-  uptime:       { usage: "/uptime",                                       role: "👤 User",   cat: "النظام"  },
-  chats:        { usage: "/chats count / list / dm on|off / angel",       role: "🔑 Admin",  cat: "النظام"  },
-  help:         { usage: "/help — /help [اسم الأمر]",                    role: "👤 User",   cat: "النظام"  },
-};
+// ── بناء رسالة الدليل الكامل ─────────────────────────────────────────────────
+function buildFullGuide(prefix) {
+  const cfg      = global.GoatBot?.config || {};
+  const admins   = [...new Set([
+    ...(cfg.adminBot      || []),
+    ...(cfg.superAdminBot || []),
+    cfg.ownerID,
+  ].filter(Boolean))];
+  const adminCount = admins.length;
 
-// ── خط فاصل ──────────────────────────────────────────────────────────────────
-const LINE = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
-
-// ── بناء رسالة كل الأوامر ────────────────────────────────────────────────────
-function buildHelpAll(prefix) {
-  const allCmds = global.GoatBot?.commands;
-  let totalCmds = 0;
+  // عدد الأوامر المحمّلة فعلياً
+  const allCmds  = global.GoatBot?.commands;
+  let totalCmds  = 0;
   if (allCmds?.size) {
     const seen = new Set();
-    for (const [, cmd] of allCmds) { if (cmd.config?.name) seen.add(cmd.config.name); }
+    for (const [, c] of allCmds) { if (c.config?.name) seen.add(c.config.name); }
     totalCmds = seen.size;
   } else {
-    for (const cat of CATEGORIES) totalCmds += cat.cmds.length;
+    totalCmds = COMMANDS.length;
+  }
+
+  // تجميع حسب الفئة
+  const cats = {};
+  for (const cmd of COMMANDS) {
+    if (!cats[cmd.cat]) cats[cmd.cat] = [];
+    cats[cmd.cat].push(cmd);
   }
 
   const lines = [];
-
-  // ── رأس الرسالة ──────────────────────────────────────────────────────
   lines.push(LINE);
-  lines.push("  ✦  D A V I D  V 1  ✦");
+  lines.push("  ✦  س ا ي ا ن  ✦");
   lines.push("  🤖 مساعدك الذكي على ماسنجر");
-  lines.push(`  ⚡ by DJAMEL  •  Prefix: ${prefix}`);
+  lines.push(`  ⚡ البادئة: ${prefix}  •  📦 الأوامر: ${totalCmds}`);
+  lines.push(`  👑 عدد الأدمنز: ${adminCount}`);
   lines.push(LINE);
   lines.push("");
 
-  // ── كل تصنيف ─────────────────────────────────────────────────────────
-  for (const cat of CATEGORIES) {
-    lines.push(` ╔═ ${cat.icon} ${cat.title} ${"═".repeat(Math.max(1, 24 - cat.title.length))}╗`);
-    for (const cmd of cat.cmds) {
-      // الاسم الفعلي في البوت (setavatar بدل changeavatar)
-      const realName = cmd.name === "changeavatar" ? "setavatar" : cmd.name;
-      const exists   = !allCmds || allCmds.has(realName);
-      const status   = exists ? "" : " ⚠️";
-      lines.push(` ║  ${cmd.icon}  ${prefix}${cmd.name.padEnd(13)}${cmd.desc}${status}`);
+  for (const [catName, cmds] of Object.entries(cats)) {
+    const bar = "═".repeat(Math.max(1, 26 - catName.replace(/[^\u0000-\u007F]/g, "  ").length));
+    lines.push(` ╔═ ${catName} ${bar}╗`);
+    for (const cmd of cmds) {
+      lines.push(` ║  ${cmd.icon}  ${prefix}${cmd.name.padEnd(14)}${cmd.desc}`);
     }
     lines.push(` ╚${"═".repeat(35)}╝`);
     lines.push("");
   }
 
-  // ── ذيل الرسالة ──────────────────────────────────────────────────────
   lines.push(LINE);
-  lines.push(`  📦 الأوامر: ${totalCmds}  •  🛡 الحماية: 20 طبقة`);
-  lines.push(`  ❓ ${prefix}help [اسم الأمر] ← للتفاصيل الكاملة`);
+  lines.push(`  ❓ للتفاصيل: ${prefix}دليل [اسم الأمر]`);
+  lines.push(`  مثال: ${prefix}دليل أغنية`);
   lines.push(LINE);
 
   return lines.join("\n");
 }
 
 // ── بناء رسالة أمر واحد ──────────────────────────────────────────────────────
-function buildHelpOne(rawName, prefix) {
-  const name    = rawName.toLowerCase().replace(/^\//, "");
-  const allCmds = global.GoatBot?.commands;
+function buildOneCmd(rawName, prefix) {
+  const name = rawName.trim().replace(/^!+\s*/, "").toLowerCase();
 
-  // ابحث في الأوامر المحمّلة أولاً
-  let cmd = allCmds?.get(name);
-  if (!cmd && allCmds) {
-    for (const [, c] of allCmds) {
-      if ((c.config?.aliases || []).map(a => String(a).toLowerCase()).includes(name)) {
-        cmd = c; break;
-      }
+  // ابحث في قائمة الأوامر الداخلية (بالاسم أو الاسم الأصلي)
+  const allCmds = global.GoatBot?.commands;
+  let matched   = COMMANDS.find(c =>
+    c.name.toLowerCase() === name ||
+    (allCmds?.get(name)?.config?.name || "").toLowerCase() === c.name.toLowerCase()
+  );
+
+  // إذا لم يُوجد في قائمتنا، خذ البيانات من allCmds مباشرة
+  if (!matched && allCmds) {
+    const cmd = allCmds.get(name);
+    if (cmd?.config) {
+      matched = {
+        icon: "•",
+        name: cmd.config.name,
+        cat:  cmd.config.category || "عام",
+        desc: cmd.config.description || "لا يوجد وصف",
+        usage: (cmd.config.guide?.en || `${prefix}${cmd.config.name}`).replace(/\{p[n]?\}/g, prefix),
+        role: cmd.config.role >= 3 ? "👑 مالك" : cmd.config.role >= 2 ? "🔑 أدمن" : "👤 مستخدم",
+      };
     }
   }
 
-  const info    = CMD_DETAILS[name] || CMD_DETAILS[cmd?.config?.name] || {};
-  const config  = cmd?.config || {};
-  const cmdName = config.name || name;
-  const desc    = config.description || config.longDescription || "لا يوجد وصف";
-  const usage   = (config.guide?.en?.replace(/\{p[n]?\}/g, prefix)) || info.usage || `${prefix}${cmdName}`;
-  const role    = info.role || (config.role === 3 ? "👑 Owner" : config.role === 2 ? "🔑 Admin" : "👤 User");
-  const cat     = info.cat  || config.category || "عام";
-  const aliases = (config.aliases || []).filter(Boolean);
-
-  // إيجاد الأيقونة
-  let icon = "•";
-  outer: for (const c of CATEGORIES)
-    for (const cm of c.cmds)
-      if (cm.name === cmdName || cm.name === name) { icon = cm.icon; break outer; }
+  if (!matched) {
+    return `❌ لا يوجد أمر باسم "${rawName}".\nاكتب ${prefix}سايان دليل لرؤية كل الأوامر.`;
+  }
 
   const lines = [];
   lines.push(LINE);
-  lines.push(`  ${icon}  ${prefix}${cmdName.toUpperCase()}`);
+  lines.push(`  ${matched.icon}  ${prefix}${matched.name}`);
   lines.push(LINE);
   lines.push("");
   lines.push(`  📝 الوصف:`);
-  lines.push(`     ${desc}`);
+  lines.push(`     ${matched.desc}`);
   lines.push("");
   lines.push(`  📌 الاستخدام:`);
-  for (const l of usage.split("\n")) lines.push(`     ${l}`);
+  for (const l of matched.usage.split("\n")) lines.push(`     ${l}`);
   lines.push("");
-  lines.push(`  🏷  الفئة    : ${cat}`);
-  lines.push(`  🔑 الصلاحية : ${role}`);
-  if (aliases.length) {
-    lines.push(`  🔀 اختصارات : ${aliases.join("، ")}`);
-  }
+  lines.push(`  🏷  الفئة     : ${matched.cat}`);
+  lines.push(`  🔐 الصلاحية  : ${matched.role}`);
   lines.push("");
   lines.push(LINE);
 
@@ -163,24 +193,33 @@ function buildHelpOne(rawName, prefix) {
 // ── Module ────────────────────────────────────────────────────────────────────
 module.exports = {
   config: {
-    name: "help",
-    aliases: ["h", "مساعدة", "أوامر", "commands"],
-    version: "3.0",
+    name: "سايان",
+    aliases: ["دليل", "help", "h", "مساعدة", "أوامر"],
+    version: "1.0",
     author: "DJAMEL",
     countDown: 3,
     role: 0,
     category: "info",
-    description: "عرض قائمة الأوامر بتصميم فخم",
+    description: "دليل الأوامر الشامل لبوت سايان",
     guide: {
-      en: "{pn} — عرض كل الأوامر\n{pn} [اسم الأمر] — تفاصيل أمر محدد",
+      en: "{pn} دليل — عرض كل الأوامر\n{pn} دليل [اسم الأمر] — تفاصيل أمر محدد",
     },
   },
 
   onStart: async function ({ args, message, prefix }) {
-    if (args[0]) {
-      message.reply(buildHelpOne(args[0], prefix));
-    } else {
-      message.reply(buildHelpAll(prefix));
+    const p = prefix || "!";
+
+    // ! سايان دليل [اسم] ← تفاصيل أمر محدد
+    if (args[0] === "دليل" && args[1]) {
+      return message.reply(buildOneCmd(args[1], p));
     }
+
+    // ! دليل [اسم] ← تفاصيل أمر محدد (عند استدعائه بالاسم المستعار)
+    if (args[0] && args[0] !== "دليل") {
+      return message.reply(buildOneCmd(args[0], p));
+    }
+
+    // ! سايان دليل  أو  ! سايان  أو  ! دليل ← الدليل الكامل
+    message.reply(buildFullGuide(p));
   },
 };
