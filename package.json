@@ -9,16 +9,16 @@
     "postinstall": "node scripts/fix-esm.js"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.104.1",
-    "@dongdev/fca-unofficial": "*",
-    "axios": "^1.16.1",
-    "body-parser": "^1.20.5",
+    "@anthropic-ai/sdk": "^0.104.2",
+    "@dongdev/fca-unofficial": "^4.0.3",
+    "axios": "^1.19.0",
+    "body-parser": "^1.20.6",
     "chalk": "^4.1.2",
     "express": "^4.22.2",
-    "fs-extra": "^11.3.5",
+    "fs-extra": "^11.4.0",
     "gradient-string": "^2.0.2",
     "moment-timezone": "^0.5.48",
     "socket.io": "^4.8.3",
@@ -26,6 +26,9 @@
   },
   "author": "DJAMEL",
   "license": "UNLICENSED",
+  "overrides": {
+    "tar": "^7.4.3"
+  },
   "keywords": [
     "facebook",
     "messenger",
