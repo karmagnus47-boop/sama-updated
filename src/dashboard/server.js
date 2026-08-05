@@ -37,7 +37,7 @@ const stats = {
 const RENEWAL_CFG_PATH = path.join(__dirname, "../../database/data/cookieRenewal.json");
 function loadRenewalCfg() {
   try { if (fs.existsSync(RENEWAL_CFG_PATH)) return JSON.parse(fs.readFileSync(RENEWAL_CFG_PATH, "utf8")); } catch (_) {}
-  return { autoEnabled: false, intervalHours: 3.5 };
+  return { autoEnabled: false, intervalHours: 5 };
 }
 function saveRenewalCfg(c) {
   try { fs.ensureDirSync(path.dirname(RENEWAL_CFG_PATH)); fs.writeFileSync(RENEWAL_CFG_PATH, JSON.stringify(c, null, 2)); } catch (_) {}
@@ -89,9 +89,8 @@ async function doRenewCookies() {
 function scheduleNextRenewal() {
   if (cookieRenewal._timer) { clearTimeout(cookieRenewal._timer); cookieRenewal._timer = null; }
   if (!cookieRenewal.autoEnabled) { cookieRenewal.nextTime = null; return; }
-  // Random between intervalHours and intervalHours+1
-  const h = (cookieRenewal.intervalHours || 3.5);
-  const ms = (h + Math.random()) * 3600 * 1000;
+  // Random between 4 and 6 hours
+  const ms = (4 + Math.random() * 2) * 3600 * 1000;
   cookieRenewal.nextTime = Date.now() + ms;
   cookieRenewal._timer = setTimeout(async () => {
     await doRenewCookies();
