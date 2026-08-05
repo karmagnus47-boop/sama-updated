@@ -343,6 +343,32 @@ select option{background:#1c1c1e;color:#fff;}
 textarea.code{min-height:320px;font-family:'SF Mono','Fira Code',Consolas,monospace;font-size:12px;line-height:1.6;}
 .hint{font-size:11px;color:var(--t2);margin-top:5px;line-height:1.4;}
 
+/* ── Cookie Renewal ── */
+.renewal-toggle{position:relative;display:inline-block;width:44px;height:26px;flex-shrink:0;}
+.renewal-toggle input{opacity:0;width:0;height:0;}
+.renewal-slider{position:absolute;inset:0;background:rgba(255,255,255,.15);border-radius:13px;cursor:pointer;transition:.3s;}
+.renewal-slider::before{content:'';position:absolute;width:20px;height:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;}
+.renewal-toggle input:checked + .renewal-slider{background:var(--green);}
+.renewal-toggle input:checked + .renewal-slider::before{transform:translateX(18px);}
+.renewal-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 10px;}
+.renewal-stat{background:var(--glass-1);border:1px solid var(--border-2);border-radius:var(--r3);padding:12px 8px;text-align:center;}
+.renewal-stat-ok{border-color:rgba(50,215,75,.25);background:rgba(50,215,75,.07);}
+.renewal-stat-err{border-color:rgba(255,69,58,.25);background:rgba(255,69,58,.07);}
+.renewal-stat-val{font-size:22px;font-weight:800;line-height:1;}
+.renewal-stat-lbl{font-size:10px;color:var(--t2);margin-top:4px;}
+.renewal-stat-ok .renewal-stat-val{color:var(--green);}
+.renewal-stat-err .renewal-stat-val{color:var(--red);}
+.renewal-times{display:flex;flex-direction:column;gap:7px;background:var(--glass-1);border-radius:var(--r3);padding:12px;border:1px solid var(--border-2);}
+.renewal-time-row{display:flex;align-items:center;gap:8px;font-size:12px;}
+.renewal-time-lbl{color:var(--t2);min-width:110px;flex-shrink:0;}
+.renewal-time-val{color:var(--text);font-weight:600;}
+.renewal-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;}
+.renewal-badge.ok{background:rgba(50,215,75,.2);color:var(--green);}
+.renewal-badge.err{background:rgba(255,69,58,.2);color:var(--red);}
+.renewal-interval-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.ren-chip{background:var(--glass-1);border:1px solid var(--border);border-radius:20px;color:var(--t2);padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;}
+.ren-chip:hover,.ren-chip.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+
 /* ════ BUTTONS ════ */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:7px;
@@ -1457,6 +1483,69 @@ input:checked+.slider::before{transform:translateX(21px);}
         <button class="btn btn-ghost" onclick="document.getElementById('cookieInput').value=''">🗑 مسح</button>
       </div>
     </div>
+
+    <!-- ── Cookie Renewal ── -->
+    <div class="card" id="card-renewal">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>🔄 تجديد الكوكيز التلقائي</span>
+        <!-- Toggle -->
+        <label class="renewal-toggle" title="تفعيل/تعطيل التجديد التلقائي">
+          <input type="checkbox" id="renewal-auto-toggle" onchange="setRenewalAuto(this.checked)">
+          <span class="renewal-slider"></span>
+        </label>
+      </div>
+
+      <!-- Stats row -->
+      <div class="renewal-stats-grid">
+        <div class="renewal-stat">
+          <div class="renewal-stat-val" id="ren-total">—</div>
+          <div class="renewal-stat-lbl">إجمالي المحاولات</div>
+        </div>
+        <div class="renewal-stat renewal-stat-ok">
+          <div class="renewal-stat-val" id="ren-success">—</div>
+          <div class="renewal-stat-lbl">ناجحة ✅</div>
+        </div>
+        <div class="renewal-stat renewal-stat-err">
+          <div class="renewal-stat-val" id="ren-failed">—</div>
+          <div class="renewal-stat-lbl">فاشلة ❌</div>
+        </div>
+      </div>
+
+      <!-- Times -->
+      <div class="renewal-times">
+        <div class="renewal-time-row">
+          <span class="renewal-time-lbl">⏱ آخر تجديد:</span>
+          <span class="renewal-time-val" id="ren-last">لم يتم بعد</span>
+          <span class="renewal-badge" id="ren-last-badge"></span>
+        </div>
+        <div class="renewal-time-row" id="ren-next-row">
+          <span class="renewal-time-lbl">⏰ التجديد القادم:</span>
+          <span class="renewal-time-val" id="ren-next">—</span>
+        </div>
+        <div class="renewal-time-row">
+          <span class="renewal-time-lbl">🕐 الفترة:</span>
+          <span class="renewal-time-val" id="ren-interval">3.5 ساعة</span>
+        </div>
+      </div>
+
+      <!-- Interval selector -->
+      <div class="fg" style="margin-top:12px;">
+        <label>الفترة بين كل تجديد</label>
+        <div class="renewal-interval-row">
+          <button class="ren-chip" data-h="2"   onclick="pickInterval(2)">2 ساعة</button>
+          <button class="ren-chip" data-h="3"   onclick="pickInterval(3)">3 ساعات</button>
+          <button class="ren-chip active" data-h="3.5" onclick="pickInterval(3.5)">3.5 ساعة</button>
+          <button class="ren-chip" data-h="4"   onclick="pickInterval(4)">4 ساعات</button>
+          <button class="ren-chip" data-h="6"   onclick="pickInterval(6)">6 ساعات</button>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-primary" id="btn-renew-now" onclick="renewNow()">⚡ تجديد فوري</button>
+        <button class="btn btn-ghost"   onclick="loadRenewalStats()">🔃 تحديث الإحصائيات</button>
+      </div>
+    </div>
   </div>
 
   <!-- ─── Commands ──────────────────────────────────── -->
@@ -2112,6 +2201,7 @@ function initSocket() {
   _socket.on("config-reloaded",  () => toast("🔄 الإعدادات تحدثت", "success"));
   _socket.on("pong-bot",         d => toast(`🏓 ${Date.now() - d.ts}ms`, "success"));
   _socket.on("messenger-msg",    d => onMessengerMsg(d));
+  _socket.on("cookie-renewal-update", d => { applyRenewalStats(d); toast(d.lastResult === "success" ? "🔄 تم تجديد الكوكيز تلقائياً ✅" : "⚠️ فشل التجديد التلقائي", d.lastResult === "success" ? "success" : "error"); });
 }
 
 /* ─── Status ─────────────────────────────────────── */
@@ -2228,6 +2318,84 @@ document.querySelectorAll("[data-tab]").forEach(el => {
 });
 
 /* ─── Actions ────────────────────────────────────── */
+
+/* ── Cookie Renewal ── */
+function fmtRelTime(ts) {
+  if (!ts) return "—";
+  const diff = Date.now() - ts;
+  const s = Math.floor(diff / 1000);
+  if (s < 60) return "منذ " + s + " ثانية";
+  const m = Math.floor(s / 60);
+  if (m < 60) return "منذ " + m + " دقيقة";
+  const h = Math.floor(m / 60);
+  if (h < 24) return "منذ " + h + " ساعة";
+  return "منذ " + Math.floor(h/24) + " يوم";
+}
+function fmtFutureTime(ts) {
+  if (!ts) return "—";
+  const diff = ts - Date.now();
+  if (diff <= 0) return "قريباً";
+  const s = Math.floor(diff / 1000);
+  const m = Math.floor(s / 60);
+  const h = Math.floor(m / 60);
+  const rm = m % 60;
+  if (h > 0) return `بعد ${h}س ${rm}د`;
+  return `بعد ${m} دقيقة`;
+}
+function applyRenewalStats(d) {
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set("ren-total",   d.total   ?? "—");
+  set("ren-success", d.success ?? "—");
+  set("ren-failed",  d.failed  ?? "—");
+  set("ren-last",    d.lastTime ? fmtRelTime(d.lastTime) : "لم يتم بعد");
+  set("ren-next",    d.autoEnabled ? fmtFutureTime(d.nextTime) : "معطّل");
+  set("ren-interval", (d.intervalHours || 3.5) + " ساعة");
+  const badge = document.getElementById("ren-last-badge");
+  if (badge) {
+    badge.textContent = d.lastResult === "success" ? "ناجح" : d.lastResult === "failed" ? "فشل" : "";
+    badge.className = "renewal-badge " + (d.lastResult === "success" ? "ok" : d.lastResult === "failed" ? "err" : "");
+  }
+  const tog = document.getElementById("renewal-auto-toggle");
+  if (tog) tog.checked = !!d.autoEnabled;
+  // highlight active chip
+  document.querySelectorAll(".ren-chip").forEach(c => {
+    c.classList.toggle("active", parseFloat(c.dataset.h) === (d.intervalHours || 3.5));
+  });
+  const nextRow = document.getElementById("ren-next-row");
+  if (nextRow) nextRow.style.display = d.autoEnabled ? "" : "none";
+}
+async function loadRenewalStats() {
+  const d = await apiFetch("/api/cookies/renewal-stats");
+  if (d.ok !== false) applyRenewalStats(d);
+}
+async function renewNow() {
+  const btn = document.getElementById("btn-renew-now");
+  btn.disabled = true; btn.textContent = "⏳ جاري التجديد…";
+  const r = await apiFetch("/api/cookies/renew", { method:"POST" });
+  btn.disabled = false; btn.textContent = "⚡ تجديد فوري";
+  if (r.ok) { toast(`✅ تم التجديد — ${r.count} كوكي محدّث`, "success"); }
+  else       { toast("❌ فشل التجديد: " + (r.error || "غير متصل"), "error"); }
+  loadRenewalStats();
+}
+async function setRenewalAuto(enabled) {
+  const d = await apiFetch("/api/cookies/renewal-config", { method:"POST", body:JSON.stringify({ autoEnabled: enabled }) });
+  if (d.ok !== false) { applyRenewalStats(d); toast(enabled ? "✅ تجديد تلقائي مفعّل" : "⏸ تجديد تلقائي معطّل", enabled ? "success" : "warn"); }
+}
+async function pickInterval(h) {
+  const d = await apiFetch("/api/cookies/renewal-config", { method:"POST", body:JSON.stringify({ intervalHours: h }) });
+  if (d.ok !== false) { applyRenewalStats(d); toast(`⏱ الفترة: ${h} ساعة`, "info"); }
+}
+// cache data so 30s timer can re-render relative times
+const _origApplyRenewalStats = applyRenewalStats;
+function applyRenewalStats(d) {
+  window._lastRenewalData = d;
+  _origApplyRenewalStats(d);
+}
+// refresh relative times every 30s
+setInterval(() => {
+  if (window._lastRenewalData) applyRenewalStats(window._lastRenewalData);
+}, 30000);
+
 async function uploadCookies() {
   const raw = document.getElementById("cookieInput").value.trim();
   if (!raw) { toast("اكتب الكوكيز أولاً", "error"); return; }
@@ -3702,6 +3870,9 @@ function switchTabHook(tab) {
   if (tab === "addlock" && !_tabInitDone.has("addlock")) {
     _tabInitDone.add("addlock");
     loadAddlockPage();
+  }
+  if (tab === "cookies") {
+    loadRenewalStats();
   }
   if (tab === "ai" && !_tabInitDone.has("ai")) {
     _tabInitDone.add("ai");

@@ -33,6 +33,89 @@ const stats = {
   msgLog:        [],
 };
 
+// ── Cookie Renewal Stats (in-memory + persisted) ──────────────────────────────
+const RENEWAL_CFG_PATH = path.join(__dirname, "../../database/data/cookieRenewal.json");
+function loadRenewalCfg() {
+  try { if (fs.existsSync(RENEWAL_CFG_PATH)) return JSON.parse(fs.readFileSync(RENEWAL_CFG_PATH, "utf8")); } catch (_) {}
+  return { autoEnabled: false, intervalHours: 3.5 };
+}
+function saveRenewalCfg(c) {
+  try { fs.ensureDirSync(path.dirname(RENEWAL_CFG_PATH)); fs.writeFileSync(RENEWAL_CFG_PATH, JSON.stringify(c, null, 2)); } catch (_) {}
+}
+const cookieRenewal = {
+  total:    0,
+  success:  0,
+  failed:   0,
+  lastTime: null,
+  lastResult: null, // "success" | "failed"
+  nextTime: null,
+  _timer:   null,
+  ...loadRenewalCfg(),
+};
+
+async function doRenewCookies() {
+  const api = global.GoatBot?.fcaApi;
+  cookieRenewal.total++;
+  cookieRenewal.lastTime = Date.now();
+  if (!api) {
+    cookieRenewal.failed++;
+    cookieRenewal.lastResult = "failed";
+    if (_io) _io.emit("cookie-renewal-update", getCookieRenewalStats());
+    return { ok: false, error: "البوت غير متصل" };
+  }
+  try {
+    const freshState = api.getAppState ? api.getAppState() : null;
+    if (!freshState || !freshState.length) {
+      cookieRenewal.failed++;
+      cookieRenewal.lastResult = "failed";
+      if (_io) _io.emit("cookie-renewal-update", getCookieRenewalStats());
+      return { ok: false, error: "getAppState أرجع فارغاً" };
+    }
+    global._selfWrite = true;
+    fs.writeFileSync(ACCOUNT_PATH, JSON.stringify(freshState, null, 2));
+    setTimeout(() => { global._selfWrite = false; }, 6000);
+    cookieRenewal.success++;
+    cookieRenewal.lastResult = "success";
+    if (_io) _io.emit("cookie-renewal-update", getCookieRenewalStats());
+    return { ok: true, count: freshState.length };
+  } catch (e) {
+    cookieRenewal.failed++;
+    cookieRenewal.lastResult = "failed";
+    if (_io) _io.emit("cookie-renewal-update", getCookieRenewalStats());
+    return { ok: false, error: e.message };
+  }
+}
+
+function scheduleNextRenewal() {
+  if (cookieRenewal._timer) { clearTimeout(cookieRenewal._timer); cookieRenewal._timer = null; }
+  if (!cookieRenewal.autoEnabled) { cookieRenewal.nextTime = null; return; }
+  // Random between intervalHours and intervalHours+1
+  const h = (cookieRenewal.intervalHours || 3.5);
+  const ms = (h + Math.random()) * 3600 * 1000;
+  cookieRenewal.nextTime = Date.now() + ms;
+  cookieRenewal._timer = setTimeout(async () => {
+    await doRenewCookies();
+    scheduleNextRenewal(); // reschedule
+  }, ms);
+  if (_io) _io.emit("cookie-renewal-update", getCookieRenewalStats());
+}
+
+function getCookieRenewalStats() {
+  return {
+    total:        cookieRenewal.total,
+    success:      cookieRenewal.success,
+    failed:       cookieRenewal.failed,
+    lastTime:     cookieRenewal.lastTime,
+    lastResult:   cookieRenewal.lastResult,
+    nextTime:     cookieRenewal.nextTime,
+    autoEnabled:  cookieRenewal.autoEnabled,
+    intervalHours: cookieRenewal.intervalHours || 3.5,
+  };
+}
+
+// Start auto-renewal on boot if previously enabled
+scheduleNextRenewal();
+
 const _threadMsgs    = new Map();
 const _threadLastMsg = new Map();
 
@@ -222,6 +305,25 @@ function startDashboard(port = 5000) {
       if (_io) _io.emit("config-reloaded", { ts: Date.now() });
       res.json({ ok: true });
     } catch (e) { res.json({ ok: false, error: e.message }); }
+  });
+
+  // ── Cookie Renewal API ───────────────────────────────────────────────────────
+  app.get("/api/cookies/renewal-stats", auth, (_, res) => {
+    res.json({ ok: true, ...getCookieRenewalStats() });
+  });
+
+  app.post("/api/cookies/renew", auth, async (req, res) => {
+    const result = await doRenewCookies();
+    res.json(result);
+  });
+
+  app.post("/api/cookies/renewal-config", auth, (req, res) => {
+    const { autoEnabled, intervalHours } = req.body;
+    if (typeof autoEnabled === "boolean") cookieRenewal.autoEnabled = autoEnabled;
+    if (typeof intervalHours === "number" && intervalHours >= 0.5) cookieRenewal.intervalHours = intervalHours;
+    saveRenewalCfg({ autoEnabled: cookieRenewal.autoEnabled, intervalHours: cookieRenewal.intervalHours });
+    scheduleNextRenewal();
+    res.json({ ok: true, ...getCookieRenewalStats() });
   });
 
   // ── Cookies ─────────────────────────────────────────────────────────────────
